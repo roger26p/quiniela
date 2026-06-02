@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#00713c" />
+<title>Quiniela Mundial 2026 · Luvebras ⚽</title>
+<style>
+  /* ============================================================
+     🎨 MARCA LUVEBRA  —  cambia SOLO estas variables para
+     adaptar a los colores reales del supermercado.
+     ============================================================ */
+  :root {
+    --brand:        #00713c;  /* color principal Luvebra (verde supermercado) */
+    --brand-dark:   #00532c;
+    --brand-light:  #1fc16b;
+    --brand-glow:   #2fe38a;
+    --accent:       #ffce1f;  /* dorado / acento */
+    --accent-dark:  #f0a800;
+
+    --bg:           #04140c;  /* fondo app (modo "stories") */
+    --bg-soft:      #0a2417;
+    --card:         #ffffff;
+    --ink:          #0a1f14;
+    --ink-soft:     #5b7065;
+    --line:         #e2ebe6;
+
+    /* superficies de cristal (glassmorphism) */
+    --glass:        rgba(255,255,255,.06);
+    --glass-2:      rgba(255,255,255,.09);
+    --glass-brd:    rgba(255,255,255,.14);
+    --glass-hi:     rgba(255,255,255,.22);
+
+    --win:          #1fc16b;
+    --draw:         #fbbf24;
+    --danger:       #f0464b;
+
+    --radio:        20px;
+    --radio-lg:     26px;
+    --sombra:       0 12px 34px rgba(0,0,0,.22);
+    --sombra-glow:  0 10px 32px rgba(31,193,107,.40);
+    --sombra-gold:  0 10px 32px rgba(255,206,31,.42);
+    --max:          460px;   /* ancho tipo teléfono, se ve bien también en desktop */
+  }
+
+  /* ===== Fondo "aurora" animado reutilizable ===== */
+  @keyframes drift {
+    0%   { transform: translate(0,0) scale(1); }
+    33%  { transform: translate(6%,-5%) scale(1.12); }
+    66%  { transform: translate(-5%,5%) scale(1.06); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+  .aurora::before {
+    content: ""; position: absolute; inset: -35%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(42% 42% at 18% 18%, rgba(47,227,138,.28), transparent 60%),
+      radial-gradient(38% 38% at 86% 12%, rgba(255,206,31,.20), transparent 60%),
+      radial-gradient(46% 46% at 72% 88%, rgba(31,193,107,.24), transparent 62%);
+    filter: blur(34px);
+    animation: drift 20s ease-in-out infinite;
+  }
+  #screen-intro > *, #screen-play > *, #screen-done > * { position: relative; z-index: 1; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.01em;
+  }
+
+  /* contenedor central tipo teléfono */
+  .app {
+    max-width: var(--max);
+    margin: 0 auto;
+    min-height: 100dvh;
+    position: relative;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* ============== PANTALLAS (state machine) ============== */
+  .screen { display: none; min-height: 100dvh; position: relative; overflow: hidden; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ====================================================== */
+  /* ============ PANTALLA 1 · INTRO / PORTADA ============ */
+  /* ====================================================== */
+  #screen-intro {
+    background:
+      radial-gradient(circle at 50% -5%, rgba(47,227,138,.22), transparent 45%),
+      linear-gradient(165deg, var(--bg) 0%, var(--bg-soft) 50%, var(--brand-dark) 100%);
+    color: #fff;
+    padding: 28px 22px calc(28px + env(safe-area-inset-bottom));
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  .brand-bar {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-weight: 900; letter-spacing: 1px; font-size: 1.1rem;
+  }
+  .brand-bar .logo {
+    background: #fff; color: var(--brand); border-radius: 12px;
+    padding: 7px 14px; font-size: 1.05rem; font-weight: 900; letter-spacing: .5px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.06);
+  }
+  .brand-bar .logo span { color: var(--accent-dark); }
+
+  .intro-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+
+  .ball { font-size: 60px; animation: floaty 3s ease-in-out infinite; filter: drop-shadow(0 10px 22px rgba(0,0,0,.45)); }
+  @keyframes floaty { 0%,100%{transform:translateY(0) rotate(-6deg)} 50%{transform:translateY(-12px) rotate(6deg)} }
+
+  .intro-mid h1 {
+    font-size: clamp(2.1rem, 9.5vw, 3rem); font-weight: 900; line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-shadow: 0 4px 24px rgba(0,0,0,.5);
+  }
+  .intro-mid h1 .y { color: var(--accent); }
+  .intro-sub { font-size: 1rem; opacity: .92; max-width: 320px; }
+  .intro-dates { font-size: .82rem; opacity: .8; letter-spacing: .5px; }
+
+  /* BANNER DE PREMIO  —  ✏️ EDITA EL TEXTO DEL PREMIO AQUÍ */
+  .prize {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #ffe26b 0%, var(--accent) 45%, var(--accent-dark) 100%);
+    color: #3a2c00; border-radius: var(--radio); padding: 16px 18px;
+    box-shadow: var(--sombra-gold); width: 100%; max-width: 360px;
+    border: 1px solid rgba(58,44,0,.18);
+  }
+  .prize::after {
+    content: ""; position: absolute; top: 0; left: -60%; width: 50%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: skewX(-18deg); animation: shine 4.5s ease-in-out infinite;
+  }
+  @keyframes shine { 0%,55%{left:-60%} 80%,100%{left:130%} }
+  .prize .tag { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; opacity: .8; }
+  .prize .big { font-size: 1.35rem; font-weight: 900; margin: 4px 0; line-height: 1.15; }
+  .prize .small { font-size: .78rem; opacity: .85; }
+
+  /* CONTADOR */
+  .countdown { display: flex; gap: 8px; justify-content: center; }
+  .cd-unit { background: var(--glass-2); border: 1px solid var(--glass-brd); border-radius: 14px; padding: 9px 11px; min-width: 58px; backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 var(--glass-hi); }
+  .cd-unit .n { display:block; font-size: 1.45rem; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .cd-unit .l { font-size: .6rem; text-transform: uppercase; letter-spacing: 1px; opacity: .8; }
+  .cd-live { background: var(--danger); padding: 10px 18px; border-radius: 99px; font-weight: 800; }
+
+  .intro-bottom { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ====================================================== */
+  /* ================== BOTONES GLOBALES ================== */
+  /* ====================================================== */
+  .btn {
+    position: relative; overflow: hidden;
+    border: none; cursor: pointer; font-family: inherit; font-weight: 800;
+    border-radius: 16px; padding: 17px 20px; font-size: 1.05rem; letter-spacing: -0.01em;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: transform .12s cubic-bezier(.2,1.2,.4,1), box-shadow .25s ease, filter .2s ease;
+    width: 100%;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn:hover { filter: brightness(1.05); }
+  .btn::after {
+    content: ""; position: absolute; top: 0; left: -75%; width: 45%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform: skewX(-18deg); transition: left .6s ease;
+  }
+  .btn:hover::after { left: 130%; }
+  .btn-primary { background: linear-gradient(135deg, var(--brand-glow), var(--brand-light) 55%, var(--brand)); color: #fff; box-shadow: var(--sombra-glow), inset 0 1px 0 rgba(255,255,255,.25); }
+  .btn-accent  { background: linear-gradient(135deg, #ffe26b, var(--accent) 55%, var(--accent-dark)); color: #3a2c00; box-shadow: var(--sombra-gold), inset 0 1px 0 rgba(255,255,255,.4); }
+  .btn-ghost   { background: var(--glass-2); color: #fff; border: 1px solid var(--glass-brd); backdrop-filter: blur(10px); }
+  .btn-light   { background: #fff; color: var(--brand); border: 1px solid var(--line); box-shadow: var(--sombra); }
+  .btn-sm { padding: 10px 14px; font-size: .9rem; width: auto; border-radius: 99px; }
+
+  /* ====================================================== */
+  /* ============ PANTALLA 2 · STORIES / JUEGO ============ */
+  /* ====================================================== */
+  #screen-play {
+    background:
+      radial-gradient(circle at 50% -10%, rgba(47,227,138,.22), transparent 52%),
+      linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 100%);
+    color: #fff;
+    padding: calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  /* Barra superior de progreso tipo "stories" */
+  .play-top { display: flex; flex-direction: column; gap: 10px; }
+  .seg-wrap { display: flex; gap: 3px; }
+  .seg { flex: 1; height: 4px; border-radius: 99px; background: rgba(255,255,255,.18); overflow: hidden; }
+  .seg.done { background: var(--accent); }
+  .seg.current { background: rgba(255,255,255,.55); }
+  .play-meta { display: flex; align-items: center; justify-content: space-between; font-size: .8rem; }
+  .play-meta .grp { background: var(--glass-2); border: 1px solid var(--glass-brd); padding: 5px 14px; border-radius: 99px; font-weight: 800; backdrop-filter: blur(8px); }
+  .play-meta .cnt { opacity: .85; font-weight: 700; }
+  .play-meta .exit { background: none; border: none; color: rgba(255,255,255,.6); font-size: .8rem; cursor: pointer; text-decoration: underline; }
+
+  @keyframes cardIn   { from{opacity:0; transform:translateX(24px)} to{opacity:1; transform:none} }
+
+  /* Barra de progreso del grupo actual */
+  .group-progress { height: 6px; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; margin: 4px 0 2px; }
+  .group-progress > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+
+  /* Zona de partidos del grupo (scroll interno) */
+  .group-zone { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 2px 4px; display: flex; flex-direction: column; gap: 10px; animation: cardIn .3s ease; -webkit-overflow-scrolling: touch; }
+
+  .gmatch {
+    background: var(--glass); border: 1px solid var(--glass-brd); border-radius: 16px; padding: 13px;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 4px 16px rgba(0,0,0,.18);
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+    animation: cardUp .35s ease backwards;
+  }
+  @keyframes cardUp { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .gmatch.touched { border-color: rgba(255,206,31,.5); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 6px 22px rgba(255,206,31,.14); }
+  .gm-meta { font-size: .66rem; opacity: .55; margin-bottom: 10px; text-align: center; letter-spacing: .2px; }
+  .gm-teams { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 11px; }
+  .gm-side { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; }
+  .gm-side.right { justify-content: flex-end; }
+  .gm-side .fl { font-size: 1.55rem; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+  .gm-side .nm { font-size: .92rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gm-vs { font-size: .62rem; opacity: .45; font-weight: 800; letter-spacing: 1px; flex-shrink: 0; }
+  .gm-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+  .gb {
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--glass-brd); background: var(--glass-2); color: #fff;
+    border-radius: 12px; padding: 13px 4px; font-size: .82rem; font-weight: 800; font-family: inherit;
+    cursor: pointer; transition: transform .12s cubic-bezier(.2,1.3,.4,1), background .18s, border-color .18s, box-shadow .18s; line-height: 1.05;
+  }
+  .gb:active { transform: scale(.91); }
+  .gb.sel { background: linear-gradient(135deg, var(--brand-glow), var(--win)); border-color: rgba(255,255,255,.85); box-shadow: 0 6px 18px rgba(31,193,107,.45); transform: translateY(-1px); }
+  .gb-draw.sel { background: linear-gradient(135deg, #ffd75e, var(--draw)); color: #3a2c00; box-shadow: 0 6px 18px rgba(251,191,36,.45); }
+
+  /* Navegación entre grupos */
+  .group-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+  .gn-btn {
+    background: var(--glass-2); border: 1px solid var(--glass-brd); color: #fff; backdrop-filter: blur(8px);
+    border-radius: 14px; padding: 14px 12px; font-size: .85rem; font-weight: 800; font-family: inherit;
+    cursor: pointer; flex: 1; transition: transform .1s, filter .2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .gn-btn:active { transform: scale(.96); }
+  .gn-btn:hover:not(:disabled) { filter: brightness(1.15); }
+  .gn-btn:disabled { opacity: .3; cursor: default; }
+  .gn-btn.finish { background: linear-gradient(135deg, #ffe26b, var(--accent) 55%, var(--accent-dark)); color: #3a2c00; flex: 1.2; box-shadow: var(--sombra-gold); border-color: transparent; }
+  .hint { text-align: center; font-size: .72rem; opacity: .6; margin-top: 8px; }
+  .hint-fill { background: none; border: none; color: var(--accent); font-size: .72rem; font-weight: 800; cursor: pointer; text-decoration: underline; font-family: inherit; padding: 0; }
+
+  /* ====================================================== */
+  /* =========== PANTALLA 3 · REGISTRO / DATOS =========== */
+  /* ====================================================== */
+  #screen-register { background: var(--brand-dark); color: #fff; padding: 0; }
+  .reg-head {
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    padding: calc(26px + env(safe-area-inset-top)) 22px 22px; text-align: center;
+  }
+  .reg-head .check { font-size: 44px; }
+  .reg-head h2 { font-size: 1.5rem; font-weight: 900; margin-top: 6px; }
+  .reg-head p { font-size: .9rem; opacity: .9; margin-top: 4px; }
+  .reg-summary {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 14px;
+    background: var(--glass-2); border: 1px solid var(--glass-brd); backdrop-filter: blur(8px);
+    border-radius: 99px; padding: 8px 16px; font-size: .85rem; font-weight: 700;
+  }
+  .reg-summary a { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 800; }
+
+  .reg-body { background: #fff; color: var(--ink); flex: 1; border-radius: 28px 28px 0 0; margin-top: -16px; padding: 28px 22px calc(26px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,.18); }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: .85rem; font-weight: 800; margin-bottom: 7px; }
+  .field label .req { color: var(--danger); }
+  .field .opt { color: var(--ink-soft); font-weight: 500; font-size: .78rem; }
+  .field input, .field select {
+    width: 100%; padding: 15px 14px; border: 2px solid var(--line); border-radius: 14px;
+    font-size: 1rem; font-family: inherit; color: var(--ink); background: #f8faf9; transition: border-color .18s, box-shadow .18s, background .18s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--brand); background: #fff; box-shadow: 0 0 0 4px rgba(31,193,107,.15); }
+  .wa-input { display: flex; align-items: stretch; }
+  .wa-input .pfx {
+    display: flex; align-items: center; gap: 6px; padding: 0 12px; font-weight: 800;
+    background: #25D366; color: #fff; border-radius: 12px 0 0 12px; font-size: .95rem; white-space: nowrap;
+  }
+  .wa-input input { border-radius: 0 12px 12px 0; border-left: none; }
+  .field-error { color: var(--danger); font-size: .8rem; margin-top: 5px; display: none; }
+  .field-error.show { display: block; }
+  .terms { font-size: .72rem; color: var(--ink-soft); text-align: center; margin: 6px 0 16px; }
+
+  /* ====================================================== */
+  /* ============== PANTALLA 4 · ÉXITO / WIN ============== */
+  /* ====================================================== */
+  #screen-done {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,206,31,.28), transparent 50%),
+      linear-gradient(170deg, var(--brand-light), var(--brand) 45%, var(--brand-dark));
+    color: #fff; padding: 30px 22px calc(26px + env(safe-area-inset-bottom));
+    justify-content: center; align-items: center; text-align: center; gap: 18px;
+  }
+  .done-trophy { font-size: 68px; animation: pop .6s cubic-bezier(.2,1.5,.4,1); filter: drop-shadow(0 10px 24px rgba(0,0,0,.35)); }
+  @keyframes pop { 0%{transform:scale(0) rotate(-18deg)} 70%{transform:scale(1.15) rotate(6deg)} 100%{transform:scale(1) rotate(0)} }
+  #screen-done h2 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; }
+  #screen-done p { opacity: .92; max-width: 340px; }
+
+  /* CUPÓN  —  ✏️ EDITA EL TEXTO/DESCUENTO DEL CUPÓN */
+  .coupon {
+    width: 100%; max-width: 360px; background: #fff; color: var(--ink); border-radius: var(--radio);
+    overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,.30); position: relative;
+  }
+  .coupon .top { background: linear-gradient(135deg, #ffe26b, var(--accent)); color: #3a2c00; padding: 13px; font-weight: 900; letter-spacing: 1px; }
+  .coupon .mid { padding: 18px 16px 6px; }
+  .coupon .mid .pct { font-size: 2.6rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--brand-light), var(--brand)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .coupon .code {
+    margin: 10px 16px 16px; border: 2px dashed var(--brand); border-radius: 10px; padding: 10px;
+    font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--brand); letter-spacing: 2px;
+  }
+  .coupon::before, .coupon::after { content:""; position:absolute; width:22px; height:22px; background:var(--brand-dark); border-radius:50%; top:50%; transform:translateY(-50%); }
+  .coupon::before { left:-11px; } .coupon::after { right:-11px; }
+
+  .done-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; }
+
+  /* ====================================================== */
+  /* ================= TOAST · MODAL ====================== */
+  /* ====================================================== */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 120px);
+    background: var(--ink); color: #fff; padding: 13px 20px; border-radius: 12px; font-size: .9rem;
+    font-weight: 600; box-shadow: var(--sombra); z-index: 9999; transition: transform .3s cubic-bezier(.2,1,.3,1);
+    max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.error { background: var(--danger); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center;
+    z-index: 9998; padding: 24px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; color: var(--ink); border-radius: var(--radio); padding: 24px; max-width: 360px; width: 100%; text-align: center; }
+  .modal h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .modal p { font-size: .9rem; color: var(--ink-soft); margin-bottom: 18px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions .btn { font-size: .95rem; padding: 12px; }
+
+  /* CONFETI */
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9990; overflow: hidden; }
+  .confetti { position: absolute; top: -20px; width: 10px; height: 14px; opacity: .9; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
+
+  @media (min-width: 481px) {
+    .app { margin-top: 20px; margin-bottom: 20px; min-height: calc(100dvh - 40px); border-radius: 32px; box-shadow: 0 40px 100px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04); }
+    .screen, #screen-register { border-radius: 32px; }
+    body { display: flex; align-items: center; }
+    body { background: radial-gradient(circle at 50% -10%, #143d24, #03100a 70%); }
+  }
+
+  /* Respeta usuarios que prefieren menos movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ PANTALLA 1 · INTRO ============ -->
+  <section class="screen active aurora" id="screen-intro">
+    <div class="brand-bar">
+      <span class="logo">LU<span>VE</span>BRAS</span>
+    </div>
+
+    <div class="intro-mid">
+      <div class="ball">⚽</div>
+      <h1>Quiniela<br>Mundial <span class="y">2026</span></h1>
+      <p class="intro-sub">Predice quién gana cada partido y participa por nuestro gran premio.</p>
+
+      <!-- ✏️ PREMIO (por definir) -->
+      <div class="prize">
+        <div class="tag">🎁 Gran premio</div>
+        <div class="big" id="prizeText">[ Premio por definir ]</div>
+        <div class="small">El que más aciertos tenga, ¡se lo lleva!</div>
+      </div>
+
+      <div class="countdown" id="countdown"></div>
+    </div>
+
+    <div class="intro-bottom">
+      <button class="btn btn-accent" id="startBtn">¡Jugar ahora! ⚽</button>
+      <p class="intro-dates">11 jun – 19 jul · 🇨🇦 🇲🇽 🇺🇸 · 90 seg para llenarla</p>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 2 · STORIES ============ -->
+  <section class="screen aurora" id="screen-play">
+    <div class="play-top">
+      <div class="seg-wrap" id="segWrap"></div>
+      <div class="play-meta">
+        <span class="grp" id="metaGroup">Grupo A</span>
+        <span class="cnt"><b id="metaCount">0</b>/72 listos ✓</span>
+        <button class="exit" id="exitPlay">Terminar →</button>
+      </div>
+    </div>
+
+    <div class="group-progress"><i id="groupProgressFill" style="width:0%"></i></div>
+    <div class="group-zone" id="groupZone"><!-- render dinámico --></div>
+
+    <div class="group-nav">
+      <button class="gn-btn" id="prevGroup">‹ Anterior</button>
+      <button class="gn-btn finish" id="nextGroup">Siguiente ›</button>
+    </div>
+    <p class="hint">Toca quién gana en cada partido · desliza ←→ entre grupos · <button class="hint-fill" id="hintFill">⚡ sugerir favoritos</button></p>
+  </section>
+
+  <!-- ============ PANTALLA 3 · REGISTRO ============ -->
+  <section class="screen" id="screen-register">
+    <div class="reg-head">
+      <div class="check">👋</div>
+      <h2>¡Empecemos!</h2>
+      <p>Déjanos tus datos para participar. Luego haces tu quiniela ⚽</p>
+    </div>
+    <div class="reg-body">
+      <div class="field">
+        <label for="name">Nombre y apellido <span class="req">*</span></label>
+        <input type="text" id="name" placeholder="Tu nombre completo" autocomplete="name" />
+        <div class="field-error" id="error-name">Por favor ingresa tu nombre.</div>
+      </div>
+      <div class="field">
+        <label for="whatsapp">WhatsApp <span class="req">*</span></label>
+        <div class="wa-input">
+          <span class="pfx">🟢 +58</span>
+          <input type="tel" id="whatsapp" placeholder="412 123 4567" inputmode="numeric" autocomplete="tel" />
+        </div>
+        <div class="field-error" id="error-whatsapp">Ingresa un número de WhatsApp válido (ej. 412 1234567).</div>
+      </div>
+      <div class="field">
+        <label for="email">Correo <span class="opt">(opcional)</span></label>
+        <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="favoriteTeam">Tu selección favorita <span class="opt">(opcional)</span></label>
+        <select id="favoriteTeam"><option value="">Elige tu equipo</option></select>
+      </div>
+      <p class="terms">Al participar aceptas las bases del concurso de Luvebras. Usaremos tu WhatsApp solo para contactarte si ganas.</p>
+      <button class="btn btn-primary" id="submitBtn">Continuar a la quiniela ⚽</button>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 4 · ÉXITO ============ -->
+  <section class="screen aurora" id="screen-done">
+    <div class="done-trophy">🏆</div>
+    <h2>¡Quedaste participando!</h2>
+    <p>Tu quiniela fue registrada. Sigue el Mundial y cruza los dedos 🤞</p>
+
+    <!-- ✏️ CUPÓN (descuento por participar) -->
+    <div class="coupon">
+      <div class="top">🎟️ REGALO POR PARTICIPAR</div>
+      <div class="mid">
+        <div class="pct">[ % ]</div>
+        <div>de descuento en tu próxima compra</div>
+      </div>
+      <div class="code" id="couponCode">LUVEBRAS-MUNDIAL</div>
+    </div>
+
+    <div class="done-actions">
+      <button class="btn btn-accent" id="shareBtn">📲 Compartir en mi historia</button>
+      <button class="btn btn-ghost" id="restartBtn">Ver mis predicciones</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast / Modal -->
+<div class="toast" id="toast"><span id="toastMessage">ok</span></div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">¿Confirmar?</h3>
+    <p id="modalMessage">Mensaje</p>
+    <div class="modal-actions">
+      <button class="btn btn-light" id="modalCancel">Cancelar</button>
+      <button class="btn btn-primary" id="modalConfirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // ⚙️ CONFIGURACIÓN  —  ajusta esto antes de publicar
+  // ============================================================
+  const CONFIG = {
+    // Pega aquí la URL del webhook de Zapier (o tu backend) para recibir las quinielas.
+    // Si lo dejas vacío, se guardan en el navegador (localStorage) para pruebas.
+    WEBHOOK_URL: "https://hook.us2.make.com/w894xshi6xqrmjtsavdvk8gik175cob3",
+    PRIZE_TEXT:   "[ Premio por definir ]",   // ✏️ ej: "Bono de Bs. 500 en Luvebra"
+    COUPON_PCT:   "10%",                        // ✏️ descuento del cupón, ej: "10%"
+    COUPON_CODE:  "LUVEBRAS-MUNDIAL26",         // ✏️ código del cupón
+    SHARE_URL:    "https://luvebras.com/quiniela" // ✏️ link que se comparte en historias
+  };
+
+  // ============================================================
+  // DATOS · Calendario fase de grupos Mundial 2026
+  // ============================================================
+  const FLAGS = {
+    "México":"🇲🇽","Sudáfrica":"🇿🇦","Corea del Sur":"🇰🇷","Chequia":"🇨🇿",
+    "Canadá":"🇨🇦","Bosnia y Herzegovina":"🇧🇦","Catar":"🇶🇦","Suiza":"🇨🇭",
+    "Brasil":"🇧🇷","Marruecos":"🇲🇦","Haití":"🇭🇹","Escocia":"🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+    "Estados Unidos":"🇺🇸","Paraguay":"🇵🇾","Australia":"🇦🇺","Turquía":"🇹🇷",
+    "Alemania":"🇩🇪","Curazao":"🇨🇼","Costa de Marfil":"🇨🇮","Ecuador":"🇪🇨",
+    "Países Bajos":"🇳🇱","Japón":"🇯🇵","Suecia":"🇸🇪","Túnez":"🇹🇳",
+    "Irán":"🇮🇷","Nueva Zelanda":"🇳🇿","Bélgica":"🇧🇪","Egipto":"🇪🇬",
+    "España":"🇪🇸","Cabo Verde":"🇨🇻","Arabia Saudita":"🇸🇦","Uruguay":"🇺🇾",
+    "Francia":"🇫🇷","Senegal":"🇸🇳","Irak":"🇮🇶","Noruega":"🇳🇴",
+    "Argentina":"🇦🇷","Argelia":"🇩🇿","Austria":"🇦🇹","Jordania":"🇯🇴",
+    "Portugal":"🇵🇹","RD Congo":"🇨🇩","Uzbekistán":"🇺🇿","Colombia":"🇨🇴",
+    "Inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croacia":"🇭🇷","Ghana":"🇬🇭","Panamá":"🇵🇦"
+  };
+
+  const MATCHES = [
+    {id:1,date:"2026-06-11",time:"15:00",group:"Grupo A",home:"México",away:"Sudáfrica",venue:"Estadio Azteca, CDMX"},
+    {id:2,date:"2026-06-11",time:"22:00",group:"Grupo A",home:"Corea del Sur",away:"Chequia",venue:"Estadio Akron, Guadalajara"},
+    {id:19,date:"2026-06-18",time:"12:00",group:"Grupo A",home:"Chequia",away:"Sudáfrica",venue:"Mercedes-Benz Stadium, Atlanta"},
+    {id:20,date:"2026-06-18",time:"21:00",group:"Grupo A",home:"México",away:"Corea del Sur",venue:"Estadio Akron, Guadalajara"},
+    {id:37,date:"2026-06-24",time:"21:00",group:"Grupo A",home:"Chequia",away:"México",venue:"Estadio Azteca, CDMX"},
+    {id:38,date:"2026-06-24",time:"21:00",group:"Grupo A",home:"Sudáfrica",away:"Corea del Sur",venue:"Estadio BBVA, Monterrey"},
+    {id:3,date:"2026-06-12",time:"15:00",group:"Grupo B",home:"Canadá",away:"Bosnia y Herzegovina",venue:"BMO Field, Toronto"},
+    {id:4,date:"2026-06-13",time:"15:00",group:"Grupo B",home:"Catar",away:"Suiza",venue:"Levi's Stadium, San Francisco"},
+    {id:21,date:"2026-06-18",time:"15:00",group:"Grupo B",home:"Suiza",away:"Bosnia y Herzegovina",venue:"SoFi Stadium, Los Ángeles"},
+    {id:22,date:"2026-06-18",time:"18:00",group:"Grupo B",home:"Canadá",away:"Catar",venue:"BC Place, Vancouver"},
+    {id:39,date:"2026-06-24",time:"15:00",group:"Grupo B",home:"Suiza",away:"Canadá",venue:"BC Place, Vancouver"},
+    {id:40,date:"2026-06-24",time:"15:00",group:"Grupo B",home:"Bosnia y Herzegovina",away:"Catar",venue:"Lumen Field, Seattle"},
+    {id:5,date:"2026-06-13",time:"18:00",group:"Grupo C",home:"Brasil",away:"Marruecos",venue:"MetLife Stadium, NY/NJ"},
+    {id:6,date:"2026-06-13",time:"21:00",group:"Grupo C",home:"Haití",away:"Escocia",venue:"Gillette Stadium, Boston"},
+    {id:23,date:"2026-06-19",time:"18:00",group:"Grupo C",home:"Escocia",away:"Marruecos",venue:"Gillette Stadium, Boston"},
+    {id:24,date:"2026-06-19",time:"21:00",group:"Grupo C",home:"Brasil",away:"Haití",venue:"Lincoln Financial Field, Filadelfia"},
+    {id:41,date:"2026-06-24",time:"18:00",group:"Grupo C",home:"Escocia",away:"Brasil",venue:"Hard Rock Stadium, Miami"},
+    {id:42,date:"2026-06-24",time:"18:00",group:"Grupo C",home:"Marruecos",away:"Haití",venue:"Mercedes-Benz Stadium, Atlanta"},
+    {id:7,date:"2026-06-12",time:"21:00",group:"Grupo D",home:"Estados Unidos",away:"Paraguay",venue:"SoFi Stadium, Los Ángeles"},
+    {id:8,date:"2026-06-14",time:"00:00",group:"Grupo D",home:"Australia",away:"Turquía",venue:"BC Place, Vancouver"},
+    {id:25,date:"2026-06-19",time:"15:00",group:"Grupo D",home:"Estados Unidos",away:"Australia",venue:"Lumen Field, Seattle"},
+    {id:26,date:"2026-06-19",time:"21:00",group:"Grupo D",home:"Turquía",away:"Paraguay",venue:"Levi's Stadium, San Francisco"},
+    {id:43,date:"2026-06-25",time:"22:00",group:"Grupo D",home:"Turquía",away:"Estados Unidos",venue:"SoFi Stadium, Los Ángeles"},
+    {id:44,date:"2026-06-25",time:"22:00",group:"Grupo D",home:"Paraguay",away:"Australia",venue:"Levi's Stadium, San Francisco"},
+    {id:9,date:"2026-06-14",time:"13:00",group:"Grupo E",home:"Alemania",away:"Curazao",venue:"NRG Stadium, Houston"},
+    {id:10,date:"2026-06-14",time:"19:00",group:"Grupo E",home:"Costa de Marfil",away:"Ecuador",venue:"Lincoln Financial Field, Filadelfia"},
+    {id:27,date:"2026-06-20",time:"16:00",group:"Grupo E",home:"Alemania",away:"Costa de Marfil",venue:"BMO Field, Toronto"},
+    {id:28,date:"2026-06-20",time:"20:00",group:"Grupo E",home:"Ecuador",away:"Curazao",venue:"Arrowhead Stadium, Kansas City"},
+    {id:45,date:"2026-06-25",time:"16:00",group:"Grupo E",home:"Ecuador",away:"Alemania",venue:"MetLife Stadium, NY/NJ"},
+    {id:46,date:"2026-06-25",time:"16:00",group:"Grupo E",home:"Curazao",away:"Costa de Marfil",venue:"Lincoln Financial Field, Filadelfia"},
+    {id:11,date:"2026-06-14",time:"16:00",group:"Grupo F",home:"Países Bajos",away:"Japón",venue:"AT&T Stadium, Dallas"},
+    {id:12,date:"2026-06-14",time:"22:00",group:"Grupo F",home:"Suecia",away:"Túnez",venue:"Estadio BBVA, Monterrey"},
+    {id:29,date:"2026-06-20",time:"13:00",group:"Grupo F",home:"Países Bajos",away:"Suecia",venue:"NRG Stadium, Houston"},
+    {id:30,date:"2026-06-21",time:"00:00",group:"Grupo F",home:"Túnez",away:"Japón",venue:"Estadio BBVA, Monterrey"},
+    {id:47,date:"2026-06-25",time:"19:00",group:"Grupo F",home:"Japón",away:"Suecia",venue:"AT&T Stadium, Dallas"},
+    {id:48,date:"2026-06-25",time:"19:00",group:"Grupo F",home:"Túnez",away:"Países Bajos",venue:"Arrowhead Stadium, Kansas City"},
+    {id:13,date:"2026-06-15",time:"15:00",group:"Grupo G",home:"Bélgica",away:"Egipto",venue:"Lumen Field, Seattle"},
+    {id:14,date:"2026-06-15",time:"21:00",group:"Grupo G",home:"Irán",away:"Nueva Zelanda",venue:"SoFi Stadium, Los Ángeles"},
+    {id:31,date:"2026-06-21",time:"15:00",group:"Grupo G",home:"Bélgica",away:"Irán",venue:"SoFi Stadium, Los Ángeles"},
+    {id:32,date:"2026-06-21",time:"21:00",group:"Grupo G",home:"Nueva Zelanda",away:"Egipto",venue:"BC Place, Vancouver"},
+    {id:49,date:"2026-06-26",time:"23:00",group:"Grupo G",home:"Egipto",away:"Irán",venue:"Lumen Field, Seattle"},
+    {id:50,date:"2026-06-26",time:"23:00",group:"Grupo G",home:"Nueva Zelanda",away:"Bélgica",venue:"BC Place, Vancouver"},
+    {id:15,date:"2026-06-15",time:"12:00",group:"Grupo H",home:"España",away:"Cabo Verde",venue:"Mercedes-Benz Stadium, Atlanta"},
+    {id:16,date:"2026-06-15",time:"18:00",group:"Grupo H",home:"Arabia Saudita",away:"Uruguay",venue:"Hard Rock Stadium, Miami"},
+    {id:33,date:"2026-06-21",time:"12:00",group:"Grupo H",home:"España",away:"Arabia Saudita",venue:"Mercedes-Benz Stadium, Atlanta"},
+    {id:34,date:"2026-06-21",time:"18:00",group:"Grupo H",home:"Uruguay",away:"Cabo Verde",venue:"Hard Rock Stadium, Miami"},
+    {id:51,date:"2026-06-26",time:"20:00",group:"Grupo H",home:"Cabo Verde",away:"Arabia Saudita",venue:"NRG Stadium, Houston"},
+    {id:52,date:"2026-06-26",time:"20:00",group:"Grupo H",home:"Uruguay",away:"España",venue:"Estadio Akron, Guadalajara"},
+    {id:17,date:"2026-06-16",time:"15:00",group:"Grupo I",home:"Francia",away:"Senegal",venue:"MetLife Stadium, NY/NJ"},
+    {id:18,date:"2026-06-16",time:"18:00",group:"Grupo I",home:"Irak",away:"Noruega",venue:"Gillette Stadium, Boston"},
+    {id:35,date:"2026-06-22",time:"17:00",group:"Grupo I",home:"Francia",away:"Irak",venue:"Lincoln Financial Field, Filadelfia"},
+    {id:36,date:"2026-06-22",time:"20:00",group:"Grupo I",home:"Noruega",away:"Senegal",venue:"MetLife Stadium, NY/NJ"},
+    {id:53,date:"2026-06-26",time:"15:00",group:"Grupo I",home:"Noruega",away:"Francia",venue:"Gillette Stadium, Boston"},
+    {id:54,date:"2026-06-26",time:"15:00",group:"Grupo I",home:"Senegal",away:"Irak",venue:"BMO Field, Toronto"},
+    {id:55,date:"2026-06-16",time:"21:00",group:"Grupo J",home:"Argentina",away:"Argelia",venue:"Arrowhead Stadium, Kansas City"},
+    {id:56,date:"2026-06-17",time:"00:00",group:"Grupo J",home:"Austria",away:"Jordania",venue:"Levi's Stadium, San Francisco"},
+    {id:57,date:"2026-06-22",time:"13:00",group:"Grupo J",home:"Argentina",away:"Austria",venue:"AT&T Stadium, Dallas"},
+    {id:58,date:"2026-06-22",time:"23:00",group:"Grupo J",home:"Jordania",away:"Argelia",venue:"Levi's Stadium, San Francisco"},
+    {id:59,date:"2026-06-27",time:"22:00",group:"Grupo J",home:"Argelia",away:"Austria",venue:"Arrowhead Stadium, Kansas City"},
+    {id:60,date:"2026-06-27",time:"22:00",group:"Grupo J",home:"Jordania",away:"Argentina",venue:"AT&T Stadium, Dallas"},
+    {id:61,date:"2026-06-17",time:"13:00",group:"Grupo K",home:"Portugal",away:"RD Congo",venue:"NRG Stadium, Houston"},
+    {id:62,date:"2026-06-17",time:"22:00",group:"Grupo K",home:"Uzbekistán",away:"Colombia",venue:"Estadio Azteca, CDMX"},
+    {id:63,date:"2026-06-23",time:"13:00",group:"Grupo K",home:"Portugal",away:"Uzbekistán",venue:"NRG Stadium, Houston"},
+    {id:64,date:"2026-06-23",time:"22:00",group:"Grupo K",home:"Colombia",away:"RD Congo",venue:"Estadio Akron, Guadalajara"},
+    {id:65,date:"2026-06-27",time:"19:30",group:"Grupo K",home:"Colombia",away:"Portugal",venue:"Hard Rock Stadium, Miami"},
+    {id:66,date:"2026-06-27",time:"19:30",group:"Grupo K",home:"RD Congo",away:"Uzbekistán",venue:"Mercedes-Benz Stadium, Atlanta"},
+    {id:67,date:"2026-06-17",time:"16:00",group:"Grupo L",home:"Inglaterra",away:"Croacia",venue:"AT&T Stadium, Dallas"},
+    {id:68,date:"2026-06-17",time:"19:00",group:"Grupo L",home:"Ghana",away:"Panamá",venue:"BMO Field, Toronto"},
+    {id:69,date:"2026-06-23",time:"16:00",group:"Grupo L",home:"Inglaterra",away:"Ghana",venue:"Gillette Stadium, Boston"},
+    {id:70,date:"2026-06-23",time:"19:00",group:"Grupo L",home:"Panamá",away:"Croacia",venue:"BMO Field, Toronto"},
+    {id:71,date:"2026-06-27",time:"17:00",group:"Grupo L",home:"Panamá",away:"Inglaterra",venue:"MetLife Stadium, NY/NJ"},
+    {id:72,date:"2026-06-27",time:"17:00",group:"Grupo L",home:"Croacia",away:"Ghana",venue:"Lincoln Financial Field, Filadelfia"}
+  ];
+
+  const TEAM_STRENGTH = {
+    "España":95,"Argentina":94,"Francia":93,"Inglaterra":92,"Brasil":91,"Portugal":89,
+    "Países Bajos":87,"Alemania":86,"Bélgica":84,"Croacia":82,"Uruguay":81,"Suiza":79,
+    "Marruecos":78,"Colombia":77,"México":76,"Estados Unidos":75,"Senegal":74,"Ecuador":73,
+    "Japón":73,"Noruega":72,"Corea del Sur":72,"Australia":71,"Suecia":70,"Egipto":69,
+    "Túnez":68,"Irán":68,"Argelia":67,"Costa de Marfil":67,"Escocia":66,"Austria":66,
+    "Canadá":65,"Catar":64,"Paraguay":64,"Turquía":63,"Sudáfrica":62,"Chequia":62,
+    "Ghana":61,"Nueva Zelanda":60,"RD Congo":60,"Bosnia y Herzegovina":59,"Cabo Verde":58,
+    "Panamá":58,"Uzbekistán":57,"Jordania":55,"Arabia Saudita":55,"Haití":54,"Irak":53,"Curazao":50
+  };
+
+  // ============================================================
+  // ESTADO
+  // ============================================================
+  const state = { groupIdx: 0, predictions: {} }; // predictions: { [id]: "home"|"draw"|"away" }
+  const KICKOFF = new Date("2026-06-11T15:00:00-06:00");
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const flag = (t) => FLAGS[t] || "🏳️";
+  const strength = (t) => TEAM_STRENGTH[t] || 60;
+  const DATA_VERSION = "v3"; // cambia esto si reseteas las predicciones de todos
+  const STORE = { pred:"quiniela_lv_pred_"+DATA_VERSION, user:"quiniela_lv_user", subs:"quiniela_lv_subs" };
+
+  const formatDate = (iso) => new Date(iso+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"});
+
+  // ============================================================
+  // NAVEGACIÓN ENTRE PANTALLAS
+  // ============================================================
+  function showScreen(id) {
+    $$(".screen").forEach(s => s.classList.remove("active"));
+    $("#"+id).classList.add("active");
+    window.scrollTo(0,0);
+  }
+
+  // ============================================================
+  // CONTADOR REGRESIVO
+  // ============================================================
+  function updateCountdown() {
+    const diff = KICKOFF - new Date();
+    const el = $("#countdown");
+    if (diff <= 0) { el.innerHTML = '<span class="cd-live">🔴 ¡MUNDIAL EN VIVO!</span>'; return; }
+    const d = Math.floor(diff/86400000),
+          h = Math.floor(diff%86400000/3600000),
+          m = Math.floor(diff%3600000/60000),
+          s = Math.floor(diff%60000/1000);
+    const u = (n,l) => `<div class="cd-unit"><span class="n">${String(n).padStart(2,'0')}</span><span class="l">${l}</span></div>`;
+    el.innerHTML = u(d,"Días")+u(h,"Hrs")+u(m,"Min")+u(s,"Seg");
+  }
+
+  // ============================================================
+  // VISTA POR GRUPO  (6 partidos por pantalla)
+  // ============================================================
+  const GROUPS = [...new Set(MATCHES.map(m => m.group))];
+
+  const matchesOf = (g) => MATCHES.filter(m => m.group === g)
+    .sort((a,b) => new Date(a.date+"T"+a.time) - new Date(b.date+"T"+b.time));
+
+  function allDone() { return MATCHES.every(m => state.predictions[m.id]); }
+  function countDone() { return MATCHES.filter(m => state.predictions[m.id]).length; }
+
+  // Pre-llena con el favorito SOLO los partidos sin predicción (respeta lo que el usuario ya tocó)
+  function prefillFavorites() {
+    MATCHES.forEach(m => {
+      if (state.predictions[m.id]) return;
+      const d = strength(m.home) - strength(m.away);
+      state.predictions[m.id] = Math.abs(d) < 4 ? "draw" : (d > 0 ? "home" : "away");
+    });
+    savePred();
+  }
+
+  function renderSegments() {
+    const wrap = $("#segWrap"); wrap.innerHTML = "";
+    GROUPS.forEach((g, i) => {
+      const seg = document.createElement("div");
+      seg.className = "seg" + (i < state.groupIdx ? " done" : i === state.groupIdx ? " current" : "");
+      wrap.appendChild(seg);
+    });
+  }
+
+  function updateGroupProgress() {
+    const gm = matchesOf(GROUPS[state.groupIdx]);
+    const done = gm.filter(m => state.predictions[m.id]).length;
+    $("#groupProgressFill").style.width = (done / gm.length * 100) + "%";
+    $("#metaCount").textContent = countDone();
+  }
+
+  function renderGroup() {
+    const g = GROUPS[state.groupIdx];
+    const zone = $("#groupZone"); zone.innerHTML = "";
+
+    matchesOf(g).forEach((m, i) => {
+      const sel = state.predictions[m.id];
+      const row = document.createElement("div");
+      row.className = "gmatch" + (sel ? " touched" : "");
+      row.style.animationDelay = (i * 0.05) + "s";
+      row.innerHTML = `
+        <div class="gm-meta">📅 ${formatDate(m.date)} · 📍 ${m.venue.split(",")[0]}</div>
+        <div class="gm-teams">
+          <span class="gm-side"><span class="fl">${flag(m.home)}</span><span class="nm">${m.home}</span></span>
+          <span class="gm-vs">VS</span>
+          <span class="gm-side right"><span class="nm">${m.away}</span><span class="fl">${flag(m.away)}</span></span>
+        </div>
+        <div class="gm-btns">
+          <button class="gb ${sel==='home'?'sel':''}" data-pick="home">Gana</button>
+          <button class="gb gb-draw ${sel==='draw'?'sel':''}" data-pick="draw">Empate</button>
+          <button class="gb ${sel==='away'?'sel':''}" data-pick="away">Gana</button>
+        </div>`;
+      row.querySelectorAll(".gb").forEach(b => b.addEventListener("click", () => pick(m.id, b.dataset.pick, row)));
+      zone.appendChild(row);
+    });
+
+    $("#metaGroup").textContent = g;
+    $("#prevGroup").disabled = state.groupIdx === 0;
+    $("#prevGroup").textContent = state.groupIdx === 0 ? "‹ Anterior" : "‹ " + GROUPS[state.groupIdx - 1];
+    const next = $("#nextGroup");
+    if (state.groupIdx === GROUPS.length - 1) { next.textContent = "Finalizar ✓"; next.classList.add("finish"); }
+    else { next.textContent = GROUPS[state.groupIdx + 1] + " ›"; next.classList.remove("finish"); }
+
+    updateGroupProgress();
+    renderSegments();
+    zone.scrollTop = 0;
+  }
+
+  // Actualiza solo la fila tocada (más fluido que re-renderizar todo el grupo)
+  function pick(id, side, row) {
+    if (state.predictions[id] === side) delete state.predictions[id]; // toggle off
+    else state.predictions[id] = side;
+    savePred();
+    if (navigator.vibrate) navigator.vibrate(12);
+    row.querySelectorAll(".gb").forEach(b => b.classList.toggle("sel", state.predictions[id] === b.dataset.pick));
+    row.classList.toggle("touched", !!state.predictions[id]);
+    updateGroupProgress();
+  }
+
+  function goGroup(i) {
+    if (i < 0 || i >= GROUPS.length) return;
+    state.groupIdx = i;
+    renderGroup();
+  }
+
+  // ============================================================
+  // STORAGE
+  // ============================================================
+  function savePred(){ try{ localStorage.setItem(STORE.pred, JSON.stringify(state.predictions)); }catch(e){} }
+  function loadAll(){
+    try {
+      const p = localStorage.getItem(STORE.pred); if (p) state.predictions = JSON.parse(p);
+      const u = localStorage.getItem(STORE.user);
+      if (u){ const d=JSON.parse(u); if(d.name)$("#name").value=d.name; if(d.whatsapp)$("#whatsapp").value=d.whatsapp; if(d.email)$("#email").value=d.email; if(d.favoriteTeam)$("#favoriteTeam").value=d.favoriteTeam; }
+    } catch(e){}
+  }
+  function saveUser(){
+    try { localStorage.setItem(STORE.user, JSON.stringify({
+      name:$("#name").value.trim(), whatsapp:$("#whatsapp").value.trim(),
+      email:$("#email").value.trim(), favoriteTeam:$("#favoriteTeam").value
+    })); } catch(e){}
+  }
+
+  // ============================================================
+  // REGISTRO + ENVÍO
+  // ============================================================
+  function goToRegister() {
+    showScreen("screen-register");
+  }
+
+  // Paso 1 (datos primero): valida nombre + WhatsApp y manda a la quiniela
+  function startQuiniela() {
+    if (!validateReg()) { showToast("Completa tu nombre y WhatsApp.", true); return; }
+    saveUser();
+    showScreen("screen-play");
+    goGroup(0);
+  }
+
+  function validateReg() {
+    let ok = true;
+    const name = $("#name"), wa = $("#whatsapp");
+    $("#error-name").classList.remove("show");
+    $("#error-whatsapp").classList.remove("show");
+    if (!name.value.trim()) { $("#error-name").classList.add("show"); ok = false; }
+    const digits = wa.value.replace(/\D/g,"");
+    if (digits.length < 10 || digits.length > 11) { $("#error-whatsapp").classList.add("show"); ok = false; }
+    return ok;
+  }
+
+  async function doSubmit() {
+    const predictions = MATCHES.map(m => {
+      const s = state.predictions[m.id] || "";
+      let winner = "";
+      if (s === "home") winner = m.home;
+      else if (s === "away") winner = m.away;
+      else if (s === "draw") winner = "Empate";
+      return { match_id:String(m.id), date:m.date, group:m.group, home_team:m.home, away_team:m.away, pick:s, predicted_winner:winner };
+    });
+    // versión "plana": una propiedad por partido (p1..p72) con el ganador predicho,
+    // para que en Make/Sheets cada predicción caiga directo en su columna
+    const flat = {};
+    predictions.forEach(p => { flat["p" + p.match_id] = p.predicted_winner; });
+    const payload = {
+      name: $("#name").value.trim(),
+      whatsapp: "+58" + $("#whatsapp").value.replace(/\D/g,""),
+      email: $("#email").value.trim(),
+      favorite_team: $("#favoriteTeam").value,
+      total_predicted: countDone(),
+      ...flat,
+      predictions,
+      submitted_at: new Date().toISOString()
+    };
+
+    const btn = $("#submitBtn");
+    btn.disabled = true; btn.textContent = "Enviando...";
+    try {
+      if (CONFIG.WEBHOOK_URL && CONFIG.WEBHOOK_URL.trim()) {
+        // mode:"no-cors" + text/plain evita el bloqueo de CORS al enviar a Make/Zapier desde el navegador.
+        // (Make lee el JSON del body igual aunque el Content-Type sea text/plain.)
+        // La respuesta queda "opaca": si fetch no lanza error de red, asumimos que el envío llegó.
+        await fetch(CONFIG.WEBHOOK_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=UTF-8"}, body:JSON.stringify(payload) });
+      } else {
+        const subs = JSON.parse(localStorage.getItem(STORE.subs) || "[]");
+        subs.push(payload); localStorage.setItem(STORE.subs, JSON.stringify(subs));
+      }
+      saveUser();
+      goToDone();
+    } catch(e) {
+      console.error(e);
+      try { const subs = JSON.parse(localStorage.getItem(STORE.subs)||"[]"); subs.push({...payload, saved_locally:true}); localStorage.setItem(STORE.subs, JSON.stringify(subs)); } catch(_){}
+      showToast("Sin conexión, guardada localmente.", true);
+      goToDone();
+    } finally {
+      btn.disabled = false; btn.textContent = "🏆 Enviar mi quiniela";
+    }
+  }
+
+  function submitQuiniela() {
+    if (!validateReg()) { showToast("Completa tu nombre y WhatsApp.", true); return; }
+    if (!allDone()) {
+      const falta = MATCHES.length - countDone();
+      showModal({
+        title:`Te falta${falta===1?'':'n'} ${falta} partido${falta===1?'':'s'}`,
+        message:"Puedes enviar así o volver y completarlos. Mientras más aciertes, más chance de ganar.",
+        confirmText:"Enviar así", cancelText:"Completar",
+        onConfirm: doSubmit,
+        onCancel: () => { const fm = MATCHES.find(m=>!state.predictions[m.id]); showScreen("screen-play"); goGroup(fm ? GROUPS.indexOf(fm.group) : 0); }
+      });
+      return;
+    }
+    doSubmit();
+  }
+
+  function goToDone() {
+    showScreen("screen-done");
+    celebrate();
+    if (navigator.vibrate) navigator.vibrate([30,40,30]);
+  }
+
+  // ============================================================
+  // COMPARTIR EN HISTORIA (imagen generada en canvas)
+  // ============================================================
+  async function buildShareImage() {
+    const W = 1080, H = 1920;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    // fondo
+    const g = x.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,"#0a7d3f"); g.addColorStop(1,"#004d28");
+    x.fillStyle = g; x.fillRect(0,0,W,H);
+    // halo dorado
+    const rg = x.createRadialGradient(W/2,420,40,W/2,420,700);
+    rg.addColorStop(0,"rgba(255,193,7,.35)"); rg.addColorStop(1,"rgba(255,193,7,0)");
+    x.fillStyle = rg; x.fillRect(0,0,W,H);
+    const center = (t,y,f,col,weight="900") => { x.fillStyle=col; x.font=`${weight} ${f}px 'Segoe UI',Arial,sans-serif`; x.textAlign="center"; x.fillText(t,W/2,y); };
+    // logo
+    x.fillStyle="#fff"; const lw=440, lh=110; roundRect(x,(W-lw)/2,150,lw,lh,24); x.fill();
+    x.fillStyle="#00713c"; x.font="900 64px 'Segoe UI',Arial,sans-serif"; x.textAlign="center"; x.fillText("LUVEBRAS",W/2,228);
+    center("⚽",430,140,"#fff");
+    center("MI QUINIELA",640,90,"#fff");
+    center("MUNDIAL 2026",740,110,"#ffc107");
+    // nombre
+    const name = ($("#name").value.trim() || "Jugador").toUpperCase();
+    center(name, 950, 70, "#fff");
+    center(`Hice ${countDone()} de 72 predicciones`, 1040, 52, "rgba(255,255,255,.9)","700");
+    // fav
+    const fav = $("#favoriteTeam").value;
+    if (fav) center(`Mi favorito: ${fav}`, 1120, 50, "#ffc107","800");
+    // premio
+    x.fillStyle="rgba(255,193,7,.95)"; roundRect(x,140,1320,W-280,220,28); x.fill();
+    center("🎁 ¡PARTICIPA Y GANA!", 1410, 60, "#3a2c00");
+    center(CONFIG.PRIZE_TEXT, 1480, 48, "#3a2c00","700");
+    // cta
+    center("Juega tú también en", 1700, 50, "rgba(255,255,255,.85)","600");
+    center(CONFIG.SHARE_URL.replace(/^https?:\/\//,''), 1770, 56, "#fff","800");
+    return new Promise(res => c.toBlob(res, "image/png"));
+  }
+  function roundRect(x,px,py,w,h,r){ x.beginPath(); x.moveTo(px+r,py); x.arcTo(px+w,py,px+w,py+h,r); x.arcTo(px+w,py+h,px,py+h,r); x.arcTo(px,py+h,px,py,r); x.arcTo(px,py,px+w,py,r); x.closePath(); }
+
+  async function shareStory() {
+    const text = `¡Hice mi Quiniela del Mundial 2026 con Luvebras! 🏆⚽ Participa tú también: ${CONFIG.SHARE_URL}`;
+    try {
+      const blob = await buildShareImage();
+      const file = new File([blob], "quiniela-luvebra.png", { type:"image/png" });
+      if (navigator.canShare && navigator.canShare({ files:[file] })) {
+        await navigator.share({ files:[file], text });
+        return;
+      }
+      if (navigator.share) { await navigator.share({ text, url: CONFIG.SHARE_URL }); return; }
+      // fallback: descargar imagen
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "quiniela-luvebra.png"; a.click();
+      showToast("Imagen descargada, súbela a tu historia 📲");
+    } catch(e) { if (e.name !== "AbortError") showToast("No se pudo compartir aquí.", true); }
+  }
+
+  // ============================================================
+  // CONFETI / TOAST / MODAL
+  // ============================================================
+  function celebrate() {
+    const cont = document.createElement("div"); cont.className="confetti-container"; document.body.appendChild(cont);
+    const cols = ["#ffc107","#00713c","#16a34a","#ffffff","#e0a800"];
+    for (let i=0;i<70;i++){ const cf=document.createElement("div"); cf.className="confetti";
+      cf.style.left=Math.random()*100+"%"; cf.style.background=cols[Math.floor(Math.random()*cols.length)];
+      cf.style.animationDuration=(2+Math.random()*2)+"s"; cf.style.animationDelay=Math.random()*.4+"s";
+      if(Math.random()>.5) cf.style.borderRadius="50%"; cont.appendChild(cf); }
+    setTimeout(()=>cont.remove(),5000);
+  }
+  function showToast(msg, err=false){ const t=$("#toast"); $("#toastMessage").textContent=msg; t.classList.toggle("error",err); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3000); }
+  function showModal({title,message,confirmText="Confirmar",cancelText="Cancelar",onConfirm,onCancel}){
+    const o=$("#modalOverlay"); $("#modalTitle").textContent=title; $("#modalMessage").textContent=message;
+    $("#modalConfirm").textContent=confirmText; $("#modalCancel").textContent=cancelText; o.classList.add("show");
+    const close=()=>o.classList.remove("show");
+    $("#modalCancel").onclick=()=>{close(); onCancel&&onCancel();};
+    $("#modalConfirm").onclick=()=>{close(); onConfirm&&onConfirm();};
+    o.onclick=(e)=>{ if(e.target===o) close(); };
+  }
+
+  // ============================================================
+  // SWIPE
+  // ============================================================
+  function initSwipe() {
+    const zone = $("#screen-play"); let x0=null, y0=null;
+    zone.addEventListener("touchstart", e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; }, {passive:true});
+    zone.addEventListener("touchend", e=>{
+      if (x0===null) return;
+      const dx=e.changedTouches[0].clientX - x0, dy=e.changedTouches[0].clientY - y0; x0=null;
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return; // ignora scroll vertical
+      if (dx < 0) goGroup(state.groupIdx+1); else goGroup(state.groupIdx-1);
+    }, {passive:true});
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  function populateTeams(){
+    const sel=$("#favoriteTeam"); Object.keys(FLAGS).sort((a,b)=>a.localeCompare(b,"es")).forEach(t=>{
+      const o=document.createElement("option"); o.value=t; o.textContent=`${FLAGS[t]} ${t}`; sel.appendChild(o);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // aplicar config editable
+    $("#prizeText").textContent = CONFIG.PRIZE_TEXT;
+    $(".coupon .pct").textContent = CONFIG.COUPON_PCT;
+    $("#couponCode").textContent = CONFIG.COUPON_CODE;
+
+    populateTeams();
+    loadAll();
+    renderGroup();
+    updateCountdown(); setInterval(updateCountdown, 1000);
+    initSwipe();
+
+    $("#startBtn").onclick = goToRegister;                 // datos primero
+    $("#prevGroup").onclick = () => goGroup(state.groupIdx - 1);
+    $("#nextGroup").onclick = () => { if (state.groupIdx === GROUPS.length - 1) submitQuiniela(); else goGroup(state.groupIdx + 1); };
+    $("#exitPlay").onclick = submitQuiniela;
+    $("#submitBtn").onclick = startQuiniela;
+    $("#shareBtn").onclick = shareStory;
+    $("#restartBtn").onclick = () => { showScreen("screen-play"); goGroup(0); };
+    $("#hintFill").onclick = () => { prefillFavorites(); renderGroup(); showToast("Sugerencias aplicadas. Cambia lo que quieras ✏️"); };
+    ["name","whatsapp","email","favoriteTeam"].forEach(id => $("#"+id).addEventListener("change", saveUser));
+  });
+</script>
+</body>
+</html>
