@@ -17,6 +17,8 @@
     --brand-glow:   #2fe38a;
     --accent:       #ffce1f;  /* dorado / acento */
     --accent-dark:  #f0a800;
+    --pt-red:       #d8102e;  /* rojo bandera Portugal (acento) */
+    --pt-red-dark:  #a00d22;
 
     --bg:           #04140c;  /* fondo app (modo "stories") */
     --bg-soft:      #0a2417;
@@ -55,7 +57,7 @@
     background:
       radial-gradient(42% 42% at 18% 18%, rgba(47,227,138,.28), transparent 60%),
       radial-gradient(38% 38% at 86% 12%, rgba(255,206,31,.20), transparent 60%),
-      radial-gradient(46% 46% at 72% 88%, rgba(31,193,107,.24), transparent 62%);
+      radial-gradient(52% 52% at 74% 90%, rgba(216,16,46,.42), transparent 64%);
     filter: blur(34px);
     animation: drift 20s ease-in-out infinite;
   }
@@ -97,6 +99,7 @@
   #screen-intro {
     background:
       radial-gradient(circle at 50% -5%, rgba(47,227,138,.22), transparent 45%),
+      radial-gradient(circle at 92% 102%, rgba(216,16,46,.30), transparent 46%),
       linear-gradient(165deg, var(--bg) 0%, var(--bg-soft) 50%, var(--brand-dark) 100%);
     color: #fff;
     padding: 28px 22px calc(28px + env(safe-area-inset-bottom));
@@ -113,7 +116,7 @@
     padding: 7px 14px; font-size: 1.05rem; font-weight: 900; letter-spacing: .5px;
     box-shadow: 0 6px 20px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.06);
   }
-  .brand-bar .logo span { color: var(--accent-dark); }
+  .brand-bar .logo span { color: var(--pt-red); }
 
   .intro-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
 
@@ -146,6 +149,10 @@
   .prize .tag { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; opacity: .8; }
   .prize .big { font-size: 1.35rem; font-weight: 900; margin: 4px 0; line-height: 1.15; }
   .prize .small { font-size: .78rem; opacity: .85; }
+  .prize-list { list-style: none; margin: 8px 0 6px; display: flex; flex-direction: column; gap: 5px; }
+  .prize-list li { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 700; line-height: 1.15; text-align: left; }
+  .prize-list li b { font-size: 1.15rem; font-weight: 900; }
+  .prize-list .medal { font-size: 1.2rem; flex-shrink: 0; }
 
   /* CONTADOR */
   .countdown { display: flex; gap: 8px; justify-content: center; }
@@ -239,6 +246,20 @@
   .gb.sel { background: linear-gradient(135deg, var(--brand-glow), var(--win)); border-color: rgba(255,255,255,.85); box-shadow: 0 6px 18px rgba(31,193,107,.45); transform: translateY(-1px); }
   .gb-draw.sel { background: linear-gradient(135deg, #ffd75e, var(--draw)); color: #3a2c00; box-shadow: 0 6px 18px rgba(251,191,36,.45); }
 
+  /* Marcador exacto (opcional, +2 pts) */
+  .gm-score { margin-top: 11px; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .gm-score .gs-label { font-size: .66rem; opacity: .6; letter-spacing: .2px; }
+  .gm-score .gs-label i { font-style: normal; font-weight: 800; color: var(--accent); opacity: .95; }
+  .gs-inputs { display: flex; align-items: center; gap: 10px; }
+  .gs-in {
+    width: 46px; height: 42px; text-align: center; font-size: 1.15rem; font-weight: 900;
+    border: 1.5px solid var(--glass-brd); background: var(--glass-2); color: #fff;
+    border-radius: 11px; font-family: inherit; transition: border-color .18s, box-shadow .18s;
+  }
+  .gs-in::placeholder { color: rgba(255,255,255,.25); font-weight: 700; }
+  .gs-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,206,31,.18); }
+  .gs-dash { font-weight: 900; opacity: .55; font-size: 1.1rem; }
+
   /* Navegación entre grupos */
   .group-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
   .gn-btn {
@@ -297,6 +318,7 @@
   #screen-done {
     background:
       radial-gradient(circle at 50% 0%, rgba(255,206,31,.28), transparent 50%),
+      radial-gradient(circle at 8% 96%, rgba(216,16,46,.34), transparent 48%),
       linear-gradient(170deg, var(--brand-light), var(--brand) 45%, var(--brand-dark));
     color: #fff; padding: 30px 22px calc(26px + env(safe-area-inset-bottom));
     justify-content: center; align-items: center; text-align: center; gap: 18px;
@@ -305,21 +327,6 @@
   @keyframes pop { 0%{transform:scale(0) rotate(-18deg)} 70%{transform:scale(1.15) rotate(6deg)} 100%{transform:scale(1) rotate(0)} }
   #screen-done h2 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; }
   #screen-done p { opacity: .92; max-width: 340px; }
-
-  /* CUPÓN  —  ✏️ EDITA EL TEXTO/DESCUENTO DEL CUPÓN */
-  .coupon {
-    width: 100%; max-width: 360px; background: #fff; color: var(--ink); border-radius: var(--radio);
-    overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,.30); position: relative;
-  }
-  .coupon .top { background: linear-gradient(135deg, #ffe26b, var(--accent)); color: #3a2c00; padding: 13px; font-weight: 900; letter-spacing: 1px; }
-  .coupon .mid { padding: 18px 16px 6px; }
-  .coupon .mid .pct { font-size: 2.6rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--brand-light), var(--brand)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .coupon .code {
-    margin: 10px 16px 16px; border: 2px dashed var(--brand); border-radius: 10px; padding: 10px;
-    font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--brand); letter-spacing: 2px;
-  }
-  .coupon::before, .coupon::after { content:""; position:absolute; width:22px; height:22px; background:var(--brand-dark); border-radius:50%; top:50%; transform:translateY(-50%); }
-  .coupon::before { left:-11px; } .coupon::after { right:-11px; }
 
   .done-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; }
 
@@ -378,10 +385,14 @@
       <h1>Quiniela<br>Mundial <span class="y">2026</span></h1>
       <p class="intro-sub">Predice quién gana cada partido y participa por nuestro gran premio.</p>
 
-      <!-- ✏️ PREMIO (por definir) -->
+      <!-- ✏️ PREMIOS -->
       <div class="prize">
-        <div class="tag">🎁 Gran premio</div>
-        <div class="big" id="prizeText">[ Premio por definir ]</div>
+        <div class="tag">🏆 Gran premio</div>
+        <ul class="prize-list">
+          <li><span class="medal">🥇</span><b>1ER LUGAR: Mercado 100$</b></li>
+          <li><span class="medal">🥈</span>2DO LUGAR: Mercado 70$</li>
+          <li><span class="medal">🥉</span>3ER LUGAR: Mercado 30$</li>
+        </ul>
         <div class="small">El que más aciertos tenga, ¡se lo lleva!</div>
       </div>
 
@@ -412,7 +423,7 @@
       <button class="gn-btn" id="prevGroup">‹ Anterior</button>
       <button class="gn-btn finish" id="nextGroup">Siguiente ›</button>
     </div>
-    <p class="hint">Toca quién gana en cada partido · desliza ←→ entre grupos · <button class="hint-fill" id="hintFill">⚡ sugerir favoritos</button></p>
+    <p class="hint">Toca quién gana y, si te atreves, pon el marcador exacto (+2 pts) · desliza ←→ entre grupos · <button class="hint-fill" id="hintFill">⚡ sugerir favoritos</button></p>
   </section>
 
   <!-- ============ PANTALLA 3 · REGISTRO ============ -->
@@ -437,6 +448,11 @@
         <div class="field-error" id="error-whatsapp">Ingresa un número de WhatsApp válido (ej. 412 1234567).</div>
       </div>
       <div class="field">
+        <label for="invoice">Número de factura <span class="req">*</span></label>
+        <input type="text" id="invoice" placeholder="Ej. 00123456" inputmode="numeric" autocomplete="off" />
+        <div class="field-error" id="error-invoice">Ingresa el número de factura de tu compra en Luvebras.</div>
+      </div>
+      <div class="field">
         <label for="email">Correo <span class="opt">(opcional)</span></label>
         <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email" />
       </div>
@@ -455,18 +471,7 @@
     <h2>¡Quedaste participando!</h2>
     <p>Tu quiniela fue registrada. Sigue el Mundial y cruza los dedos 🤞</p>
 
-    <!-- ✏️ CUPÓN (descuento por participar) -->
-    <div class="coupon">
-      <div class="top">🎟️ REGALO POR PARTICIPAR</div>
-      <div class="mid">
-        <div class="pct">[ % ]</div>
-        <div>de descuento en tu próxima compra</div>
-      </div>
-      <div class="code" id="couponCode">LUVEBRAS-MUNDIAL</div>
-    </div>
-
     <div class="done-actions">
-      <button class="btn btn-accent" id="shareBtn">📲 Compartir en mi historia</button>
       <button class="btn btn-ghost" id="restartBtn">Ver mis predicciones</button>
     </div>
   </section>
@@ -493,11 +498,7 @@
   const CONFIG = {
     // Pega aquí la URL del webhook de Zapier (o tu backend) para recibir las quinielas.
     // Si lo dejas vacío, se guardan en el navegador (localStorage) para pruebas.
-    WEBHOOK_URL: "https://hook.us2.make.com/w894xshi6xqrmjtsavdvk8gik175cob3",
-    PRIZE_TEXT:   "[ Premio por definir ]",   // ✏️ ej: "Bono de Bs. 500 en Luvebra"
-    COUPON_PCT:   "10%",                        // ✏️ descuento del cupón, ej: "10%"
-    COUPON_CODE:  "LUVEBRAS-MUNDIAL26",         // ✏️ código del cupón
-    SHARE_URL:    "https://luvebras.com/quiniela" // ✏️ link que se comparte en historias
+    WEBHOOK_URL: "https://hook.us2.make.com/w894xshi6xqrmjtsavdvk8gik175cob3"
   };
 
   // ============================================================
@@ -607,14 +608,15 @@
   // ============================================================
   // ESTADO
   // ============================================================
-  const state = { groupIdx: 0, predictions: {} }; // predictions: { [id]: "home"|"draw"|"away" }
+  const state = { groupIdx: 0, predictions: {}, scores: {} };
+  // predictions: { [id]: "home"|"draw"|"away" }   scores: { [id]: {h:"2", a:"0"} }
   const KICKOFF = new Date("2026-06-11T15:00:00-06:00");
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
   const flag = (t) => FLAGS[t] || "🏳️";
   const strength = (t) => TEAM_STRENGTH[t] || 60;
   const DATA_VERSION = "v3"; // cambia esto si reseteas las predicciones de todos
-  const STORE = { pred:"quiniela_lv_pred_"+DATA_VERSION, user:"quiniela_lv_user", subs:"quiniela_lv_subs" };
+  const STORE = { pred:"quiniela_lv_pred_"+DATA_VERSION, score:"quiniela_lv_score_"+DATA_VERSION, user:"quiniela_lv_user", subs:"quiniela_lv_subs" };
 
   const formatDate = (iso) => new Date(iso+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"});
 
@@ -685,6 +687,7 @@
 
     matchesOf(g).forEach((m, i) => {
       const sel = state.predictions[m.id];
+      const sc = state.scores[m.id] || {};
       const row = document.createElement("div");
       row.className = "gmatch" + (sel ? " touched" : "");
       row.style.animationDelay = (i * 0.05) + "s";
@@ -699,8 +702,17 @@
           <button class="gb ${sel==='home'?'sel':''}" data-pick="home">Gana</button>
           <button class="gb gb-draw ${sel==='draw'?'sel':''}" data-pick="draw">Empate</button>
           <button class="gb ${sel==='away'?'sel':''}" data-pick="away">Gana</button>
+        </div>
+        <div class="gm-score">
+          <span class="gs-label">⚽ Marcador exacto <i>(opcional · +2 pts)</i></span>
+          <div class="gs-inputs">
+            <input class="gs-in" type="text" inputmode="numeric" maxlength="2" data-score="home" value="${sc.h ?? ''}" aria-label="Goles ${m.home}" placeholder="0" />
+            <span class="gs-dash">–</span>
+            <input class="gs-in" type="text" inputmode="numeric" maxlength="2" data-score="away" value="${sc.a ?? ''}" aria-label="Goles ${m.away}" placeholder="0" />
+          </div>
         </div>`;
       row.querySelectorAll(".gb").forEach(b => b.addEventListener("click", () => pick(m.id, b.dataset.pick, row)));
+      row.querySelectorAll(".gs-in").forEach(inp => inp.addEventListener("input", () => setScore(m.id, row)));
       zone.appendChild(row);
     });
 
@@ -716,14 +728,43 @@
     zone.scrollTop = 0;
   }
 
+  const impliedSide = (sc) => (sc && sc.h !== "" && sc.a !== "")
+    ? (+sc.h > +sc.a ? "home" : +sc.h < +sc.a ? "away" : "draw") : null;
+
   // Actualiza solo la fila tocada (más fluido que re-renderizar todo el grupo)
   function pick(id, side, row) {
     if (state.predictions[id] === side) delete state.predictions[id]; // toggle off
     else state.predictions[id] = side;
+    // si había un marcador que ya no coincide con el ganador elegido, lo limpiamos
+    const imp = impliedSide(state.scores[id]);
+    if (imp && imp !== state.predictions[id]) {
+      delete state.scores[id];
+      row.querySelectorAll(".gs-in").forEach(inp => inp.value = "");
+      saveScore();
+    }
     savePred();
     if (navigator.vibrate) navigator.vibrate(12);
     row.querySelectorAll(".gb").forEach(b => b.classList.toggle("sel", state.predictions[id] === b.dataset.pick));
     row.classList.toggle("touched", !!state.predictions[id]);
+    updateGroupProgress();
+  }
+
+  // Marcador exacto: sanea a dígitos y, si ambos están llenos, fija el ganador acorde
+  function setScore(id, row) {
+    const ins = row.querySelectorAll(".gs-in");
+    const h = ins[0].value.replace(/\D/g,"").slice(0,2);
+    const a = ins[1].value.replace(/\D/g,"").slice(0,2);
+    ins[0].value = h; ins[1].value = a;
+    if (h === "" && a === "") delete state.scores[id];
+    else state.scores[id] = { h, a };
+    const imp = impliedSide(state.scores[id]);
+    if (imp) {
+      state.predictions[id] = imp;
+      row.querySelectorAll(".gb").forEach(b => b.classList.toggle("sel", b.dataset.pick === imp));
+      row.classList.add("touched");
+      savePred();
+    }
+    saveScore();
     updateGroupProgress();
   }
 
@@ -737,16 +778,19 @@
   // STORAGE
   // ============================================================
   function savePred(){ try{ localStorage.setItem(STORE.pred, JSON.stringify(state.predictions)); }catch(e){} }
+  function saveScore(){ try{ localStorage.setItem(STORE.score, JSON.stringify(state.scores)); }catch(e){} }
   function loadAll(){
     try {
       const p = localStorage.getItem(STORE.pred); if (p) state.predictions = JSON.parse(p);
+      const sc = localStorage.getItem(STORE.score); if (sc) state.scores = JSON.parse(sc);
       const u = localStorage.getItem(STORE.user);
-      if (u){ const d=JSON.parse(u); if(d.name)$("#name").value=d.name; if(d.whatsapp)$("#whatsapp").value=d.whatsapp; if(d.email)$("#email").value=d.email; if(d.favoriteTeam)$("#favoriteTeam").value=d.favoriteTeam; }
+      if (u){ const d=JSON.parse(u); if(d.name)$("#name").value=d.name; if(d.whatsapp)$("#whatsapp").value=d.whatsapp; if(d.invoice)$("#invoice").value=d.invoice; if(d.email)$("#email").value=d.email; if(d.favoriteTeam)$("#favoriteTeam").value=d.favoriteTeam; }
     } catch(e){}
   }
   function saveUser(){
     try { localStorage.setItem(STORE.user, JSON.stringify({
       name:$("#name").value.trim(), whatsapp:$("#whatsapp").value.trim(),
+      invoice:$("#invoice").value.trim(),
       email:$("#email").value.trim(), favoriteTeam:$("#favoriteTeam").value
     })); } catch(e){}
   }
@@ -768,12 +812,14 @@
 
   function validateReg() {
     let ok = true;
-    const name = $("#name"), wa = $("#whatsapp");
+    const name = $("#name"), wa = $("#whatsapp"), inv = $("#invoice");
     $("#error-name").classList.remove("show");
     $("#error-whatsapp").classList.remove("show");
+    $("#error-invoice").classList.remove("show");
     if (!name.value.trim()) { $("#error-name").classList.add("show"); ok = false; }
     const digits = wa.value.replace(/\D/g,"");
     if (digits.length < 10 || digits.length > 11) { $("#error-whatsapp").classList.add("show"); ok = false; }
+    if (!inv.value.trim()) { $("#error-invoice").classList.add("show"); ok = false; }
     return ok;
   }
 
@@ -784,18 +830,23 @@
       if (s === "home") winner = m.home;
       else if (s === "away") winner = m.away;
       else if (s === "draw") winner = "Empate";
-      return { match_id:String(m.id), date:m.date, group:m.group, home_team:m.home, away_team:m.away, pick:s, predicted_winner:winner };
+      const sc = state.scores[m.id];
+      const hasScore = sc && sc.h !== "" && sc.a !== "";
+      const score = hasScore ? `${sc.h}-${sc.a}` : "";
+      return { match_id:String(m.id), date:m.date, group:m.group, home_team:m.home, away_team:m.away, pick:s, predicted_winner:winner, predicted_score:score };
     });
-    // versión "plana": una propiedad por partido (p1..p72) con el ganador predicho,
-    // para que en Make/Sheets cada predicción caiga directo en su columna
+    // versión "plana": una propiedad por partido (p1..p72) con el ganador predicho
+    // y p1m..p72m con el marcador exacto, para que en Make/Sheets cada dato caiga en su columna
     const flat = {};
-    predictions.forEach(p => { flat["p" + p.match_id] = p.predicted_winner; });
+    predictions.forEach(p => { flat["p" + p.match_id] = p.predicted_winner; flat["p" + p.match_id + "m"] = p.predicted_score; });
     const payload = {
       name: $("#name").value.trim(),
       whatsapp: "+58" + $("#whatsapp").value.replace(/\D/g,""),
+      invoice: $("#invoice").value.trim(),
       email: $("#email").value.trim(),
       favorite_team: $("#favoriteTeam").value,
       total_predicted: countDone(),
+      total_scores: predictions.filter(p => p.predicted_score).length,
       ...flat,
       predictions,
       submitted_at: new Date().toISOString()
@@ -805,10 +856,12 @@
     btn.disabled = true; btn.textContent = "Enviando...";
     try {
       if (CONFIG.WEBHOOK_URL && CONFIG.WEBHOOK_URL.trim()) {
-        // mode:"no-cors" + text/plain evita el bloqueo de CORS al enviar a Make/Zapier desde el navegador.
-        // (Make lee el JSON del body igual aunque el Content-Type sea text/plain.)
-        // La respuesta queda "opaca": si fetch no lanza error de red, asumimos que el envío llegó.
-        await fetch(CONFIG.WEBHOOK_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=UTF-8"}, body:JSON.stringify(payload) });
+        // Enviamos como application/json para que Make separe el JSON en campos individuales
+        // (name, whatsapp, invoice, p1, p1m, ...). Con text/plain Make lo metía todo en un solo
+        // campo "value" y las columnas quedaban vacías. El webhook de Make admite CORS, así que
+        // un fetch normal funciona desde el navegador y además podemos detectar errores reales.
+        const resp = await fetch(CONFIG.WEBHOOK_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+        if (!resp.ok) throw new Error("El webhook respondió " + resp.status);
       } else {
         const subs = JSON.parse(localStorage.getItem(STORE.subs) || "[]");
         subs.push(payload); localStorage.setItem(STORE.subs, JSON.stringify(subs));
@@ -845,62 +898,6 @@
     showScreen("screen-done");
     celebrate();
     if (navigator.vibrate) navigator.vibrate([30,40,30]);
-  }
-
-  // ============================================================
-  // COMPARTIR EN HISTORIA (imagen generada en canvas)
-  // ============================================================
-  async function buildShareImage() {
-    const W = 1080, H = 1920;
-    const c = document.createElement("canvas"); c.width = W; c.height = H;
-    const x = c.getContext("2d");
-    // fondo
-    const g = x.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#0a7d3f"); g.addColorStop(1,"#004d28");
-    x.fillStyle = g; x.fillRect(0,0,W,H);
-    // halo dorado
-    const rg = x.createRadialGradient(W/2,420,40,W/2,420,700);
-    rg.addColorStop(0,"rgba(255,193,7,.35)"); rg.addColorStop(1,"rgba(255,193,7,0)");
-    x.fillStyle = rg; x.fillRect(0,0,W,H);
-    const center = (t,y,f,col,weight="900") => { x.fillStyle=col; x.font=`${weight} ${f}px 'Segoe UI',Arial,sans-serif`; x.textAlign="center"; x.fillText(t,W/2,y); };
-    // logo
-    x.fillStyle="#fff"; const lw=440, lh=110; roundRect(x,(W-lw)/2,150,lw,lh,24); x.fill();
-    x.fillStyle="#00713c"; x.font="900 64px 'Segoe UI',Arial,sans-serif"; x.textAlign="center"; x.fillText("LUVEBRAS",W/2,228);
-    center("⚽",430,140,"#fff");
-    center("MI QUINIELA",640,90,"#fff");
-    center("MUNDIAL 2026",740,110,"#ffc107");
-    // nombre
-    const name = ($("#name").value.trim() || "Jugador").toUpperCase();
-    center(name, 950, 70, "#fff");
-    center(`Hice ${countDone()} de 72 predicciones`, 1040, 52, "rgba(255,255,255,.9)","700");
-    // fav
-    const fav = $("#favoriteTeam").value;
-    if (fav) center(`Mi favorito: ${fav}`, 1120, 50, "#ffc107","800");
-    // premio
-    x.fillStyle="rgba(255,193,7,.95)"; roundRect(x,140,1320,W-280,220,28); x.fill();
-    center("🎁 ¡PARTICIPA Y GANA!", 1410, 60, "#3a2c00");
-    center(CONFIG.PRIZE_TEXT, 1480, 48, "#3a2c00","700");
-    // cta
-    center("Juega tú también en", 1700, 50, "rgba(255,255,255,.85)","600");
-    center(CONFIG.SHARE_URL.replace(/^https?:\/\//,''), 1770, 56, "#fff","800");
-    return new Promise(res => c.toBlob(res, "image/png"));
-  }
-  function roundRect(x,px,py,w,h,r){ x.beginPath(); x.moveTo(px+r,py); x.arcTo(px+w,py,px+w,py+h,r); x.arcTo(px+w,py+h,px,py+h,r); x.arcTo(px,py+h,px,py,r); x.arcTo(px,py,px+w,py,r); x.closePath(); }
-
-  async function shareStory() {
-    const text = `¡Hice mi Quiniela del Mundial 2026 con Luvebras! 🏆⚽ Participa tú también: ${CONFIG.SHARE_URL}`;
-    try {
-      const blob = await buildShareImage();
-      const file = new File([blob], "quiniela-luvebra.png", { type:"image/png" });
-      if (navigator.canShare && navigator.canShare({ files:[file] })) {
-        await navigator.share({ files:[file], text });
-        return;
-      }
-      if (navigator.share) { await navigator.share({ text, url: CONFIG.SHARE_URL }); return; }
-      // fallback: descargar imagen
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "quiniela-luvebra.png"; a.click();
-      showToast("Imagen descargada, súbela a tu historia 📲");
-    } catch(e) { if (e.name !== "AbortError") showToast("No se pudo compartir aquí.", true); }
   }
 
   // ============================================================
@@ -949,11 +946,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    // aplicar config editable
-    $("#prizeText").textContent = CONFIG.PRIZE_TEXT;
-    $(".coupon .pct").textContent = CONFIG.COUPON_PCT;
-    $("#couponCode").textContent = CONFIG.COUPON_CODE;
-
     populateTeams();
     loadAll();
     renderGroup();
@@ -965,10 +957,9 @@
     $("#nextGroup").onclick = () => { if (state.groupIdx === GROUPS.length - 1) submitQuiniela(); else goGroup(state.groupIdx + 1); };
     $("#exitPlay").onclick = submitQuiniela;
     $("#submitBtn").onclick = startQuiniela;
-    $("#shareBtn").onclick = shareStory;
     $("#restartBtn").onclick = () => { showScreen("screen-play"); goGroup(0); };
     $("#hintFill").onclick = () => { prefillFavorites(); renderGroup(); showToast("Sugerencias aplicadas. Cambia lo que quieras ✏️"); };
-    ["name","whatsapp","email","favoriteTeam"].forEach(id => $("#"+id).addEventListener("change", saveUser));
+    ["name","whatsapp","invoice","email","favoriteTeam"].forEach(id => $("#"+id).addEventListener("change", saveUser));
   });
 </script>
 </body>
